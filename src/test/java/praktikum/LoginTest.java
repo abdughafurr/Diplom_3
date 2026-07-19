@@ -1,6 +1,7 @@
 package praktikum;
 
 import io.qameta.allure.junit4.DisplayName;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import praktikum.api.User;
@@ -25,6 +26,11 @@ public class LoginTest extends BaseTest {
         accessToken = userClient.create(user).extract().path("accessToken");
     }
 
+    @After
+    public void deleteUser() {
+        userClient.delete(accessToken);
+    }
+
     @Test
     @DisplayName("Вход по кнопке 'Войти в аккаунт' на главной")
     public void loginViaMainButton() {
@@ -34,7 +40,7 @@ public class LoginTest extends BaseTest {
         LoginPage loginPage = new LoginPage(driver);
         loginPage.login(user.getEmail(), user.getPassword());
 
-        assertTrue(mainPage.isBunsSectionActive());
+        assertTrue(mainPage.isMainPageOpened());
     }
 
     @Test
@@ -46,7 +52,7 @@ public class LoginTest extends BaseTest {
         LoginPage loginPage = new LoginPage(driver);
         loginPage.login(user.getEmail(), user.getPassword());
 
-        assertTrue(mainPage.isBunsSectionActive());
+        assertTrue(mainPage.isMainPageOpened());
     }
 
     @Test
@@ -63,7 +69,7 @@ public class LoginTest extends BaseTest {
 
         loginPage.login(user.getEmail(), user.getPassword());
 
-        assertTrue(mainPage.isBunsSectionActive());
+        assertTrue(mainPage.isMainPageOpened());
     }
 
     @Test
@@ -80,11 +86,6 @@ public class LoginTest extends BaseTest {
 
         loginPage.login(user.getEmail(), user.getPassword());
 
-        assertTrue(mainPage.isBunsSectionActive());
-    }
-
-    @org.junit.After
-    public void deleteUser() {
-        userClient.delete(accessToken);
+        assertTrue(mainPage.isMainPageOpened());
     }
 }

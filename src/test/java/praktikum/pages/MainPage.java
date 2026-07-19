@@ -10,21 +10,18 @@ import java.time.Duration;
 
 public class MainPage {
 
+    private static final String CURRENT_TAB_CLASS = "tab_tab_type_current";
+
     private final WebDriver driver;
 
     // Кнопки входа
     private final By loginAccountButton = By.xpath("//button[text()='Войти в аккаунт']");
     private final By personalAccountButton = By.xpath("//a[@href='/account']");
 
-    // Разделы конструктора
-    private final By bunsSection = By.xpath("//span[text()='Булки']");
-    private final By saucesSection = By.xpath("//span[text()='Соусы']");
-    private final By fillingsSection = By.xpath("//span[text()='Начинки']");
-
-    // Заголовки разделов (для проверки, что раздел активен)
-    private final By bunsHeader = By.xpath("//h2[text()='Булки']");
-    private final By saucesHeader = By.xpath("//h2[text()='Соусы']");
-    private final By fillingsHeader = By.xpath("//h2[text()='Начинки']");
+    // Вкладки конструктора (div, содержащий название раздела)
+    private final By bunsTab = By.xpath("//span[text()='Булки']/parent::div");
+    private final By saucesTab = By.xpath("//span[text()='Соусы']/parent::div");
+    private final By fillingsTab = By.xpath("//span[text()='Начинки']/parent::div");
 
     public MainPage(WebDriver driver) {
         this.driver = driver;
@@ -41,37 +38,43 @@ public class MainPage {
     }
 
     @Step("Клик по разделу 'Булки'")
-    public void clickBunsSection() {
-        driver.findElement(bunsSection).click();
+    public void clickBunsTab() {
+        driver.findElement(bunsTab).click();
     }
 
     @Step("Клик по разделу 'Соусы'")
-    public void clickSaucesSection() {
-        driver.findElement(saucesSection).click();
+    public void clickSaucesTab() {
+        driver.findElement(saucesTab).click();
     }
 
     @Step("Клик по разделу 'Начинки'")
-    public void clickFillingsSection() {
-        driver.findElement(fillingsSection).click();
+    public void clickFillingsTab() {
+        driver.findElement(fillingsTab).click();
     }
 
-    @Step("Проверка, что раздел 'Булки' активен")
-    public boolean isBunsSectionActive() {
-        return isElementVisible(bunsHeader);
+    @Step("Проверка, что раздел 'Булки' выбран")
+    public boolean isBunsTabSelected() {
+        return isTabSelected(bunsTab);
     }
 
-    @Step("Проверка, что раздел 'Соусы' активен")
-    public boolean isSaucesSectionActive() {
-        return isElementVisible(saucesHeader);
+    @Step("Проверка, что раздел 'Соусы' выбран")
+    public boolean isSaucesTabSelected() {
+        return isTabSelected(saucesTab);
     }
 
-    @Step("Проверка, что раздел 'Начинки' активен")
-    public boolean isFillingsSectionActive() {
-        return isElementVisible(fillingsHeader);
+    @Step("Проверка, что раздел 'Начинки' выбран")
+    public boolean isFillingsTabSelected() {
+        return isTabSelected(fillingsTab);
     }
 
-    private boolean isElementVisible(By locator) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator)).isDisplayed();
+    @Step("Ожидание загрузки главной страницы")
+    public boolean isMainPageOpened() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(bunsTab)).isDisplayed();
+    }
+
+    private boolean isTabSelected(By tabLocator) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        return wait.until(ExpectedConditions.attributeContains(tabLocator, "class", CURRENT_TAB_CLASS));
     }
 }

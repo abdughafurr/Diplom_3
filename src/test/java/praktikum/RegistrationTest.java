@@ -1,10 +1,13 @@
 package praktikum;
 
 import io.qameta.allure.junit4.DisplayName;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import praktikum.api.User;
 import praktikum.api.UserClient;
 import praktikum.api.UserGenerator;
+import praktikum.pages.LoginPage;
 import praktikum.pages.MainPage;
 import praktikum.pages.RegisterPage;
 
@@ -12,50 +15,51 @@ import static org.junit.Assert.assertTrue;
 
 public class RegistrationTest extends BaseTest {
 
+    private static final String SHORT_PASSWORD = "12345";
+
     private final UserClient userClient = new UserClient();
-    private String accessToken;
+    private User user;
+
+    @Before
+    public void createTestData() {
+        user = UserGenerator.getRandom();
+    }
+
+    @After
+    public void deleteUser() {
+        String accessToken = userClient.login(user).extract().path("accessToken");
+        userClient.delete(accessToken);
+    }
 
     @Test
     @DisplayName("Успешная регистрация")
     public void successfulRegistration() {
-        User user = UserGenerator.getRandom();
-
         MainPage mainPage = new MainPage(driver);
         mainPage.clickLoginAccountButton();
 
-        praktikum.pages.LoginPage loginPage = new praktikum.pages.LoginPage(driver);
+        LoginPage loginPage = new LoginPage(driver);
         loginPage.clickRegisterLink();
 
         RegisterPage registerPage = new RegisterPage(driver);
         registerPage.register(user.getName(), user.getEmail(), user.getPassword());
 
-        // После успешной регистрации открывается страница входа
         assertTrue(loginPage.isLoginButtonVisible());
-
-        // Для последующего удаления пользователя получаем токен
-        accessToken = userClient.login(user).extract().path("accessToken");
     }
 
     @Test
     @DisplayName("Ошибка при регистрации с паролем меньше 6 символов")
     public void registrationWithShortPassword() {
-        User user = UserGenerator.getRandom();
-        user.setPassword("123");
+        user.setPassword(SHORT_PASSWORD);
 
         MainPage mainPage = new MainPage(driver);
         mainPage.clickLoginAccountButton();
 
-        praktikum.pages.LoginPage loginPage = new praktikum.pages.LoginPage(driver);
+        LoginPage loginPage = new LoginPage(driver);
         loginPage.clickRegisterLink();
 
         RegisterPage registerPage = new RegisterPage(driver);
         registerPage.register(user.getName(), user.getEmail(), user.getPassword());
 
         assertTrue(registerPage.isPasswordErrorVisible());
-    }
-
-    @org.junit.After
-    public void deleteUser() {
-        userClient.delete(accessToken);
     }
 }

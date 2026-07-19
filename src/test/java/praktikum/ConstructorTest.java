@@ -10,30 +10,30 @@ public class ConstructorTest extends BaseTest {
 
     @Test
     @DisplayName("Переход к разделу 'Булки'")
-    public void goToBunsSection() {
+    public void goToBunsTab() {
         MainPage mainPage = new MainPage(driver);
-        // Сначала уходим на другой раздел, потом возвращаемся к Булкам
-        mainPage.clickSaucesSection();
-        mainPage.clickBunsSection();
+        // Уходим на другой раздел, так как 'Булки' выбраны по умолчанию
+        mainPage.clickSaucesTab();
+        mainPage.clickBunsTab();
 
-        assertTrue(mainPage.isBunsSectionActive());
+        assertTrue(mainPage.isBunsTabSelected());
     }
 
     @Test
     @DisplayName("Переход к разделу 'Соусы'")
-    public void goToSaucesSection() {
+    public void goToSaucesTab() {
         MainPage mainPage = new MainPage(driver);
-        mainPage.clickSaucesSection();
+        mainPage.clickSaucesTab();
 
-        assertTrue(mainPage.isSaucesSectionActive());
+        assertTrue(mainPage.isSaucesTabSelected());
     }
 
     @Test
     @DisplayName("Переход к разделу 'Начинки'")
-    public void goToFillingsSection() {
+    public void goToFillingsTab() {
         MainPage mainPage = new MainPage(driver);
-        mainPage.clickFillingsSection();
+        mainPage.clickFillingsTab();
 
-        assertTrue(mainPage.isFillingsSectionActive());
+        assertTrue(mainPage.isFillingsTabSelected());
     }
 }
